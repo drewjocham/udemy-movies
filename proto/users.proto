@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+option go_package = "api/proto/api";
+
+import "google/api/annotations.proto";
+
+service UserService {
+
+    rpc GetUsers(GetUsersRequest) returns (GetUsersResponse) {
+        option (google.api.http) = {
+            get: "/v1/users"
+        };
+    }
+
+    rpc GetUsersActive(GetUsersActiveRequest) returns (GetUsersActiveResponse) {
+        option (google.api.http) = {
+            get: "/v1/users/activated"
+        };
+    }
+
+    rpc GetUsersPassword(GetUsersPasswordRequest) returns (GetUsersPasswordResponse) {
+        option (google.api.http) = {
+            get: "/v1/users/password"
+        };
+    }
+
+}
+
+message GetUsersRequest {
+
+}
+
+message GetUsersResponse {
+
+}
+
+message GetUsersActiveRequest {
+
+}
+
+message GetUsersActiveResponse {
+
+}
+
+message GetUsersPasswordRequest {
+
+}
+
+message GetUsersPasswordResponse {
+
+}

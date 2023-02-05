@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+option go_package = "api/proto/api";
+
+import "google/api/annotations.proto";
+
+service MovieService {
+
+    rpc GetAllMovies(MovieRequest) returns (GetAllMoviesResponse) {
+        option (google.api.http) = {
+            get: "/v1/movies"
+        };
+    }
+
+    rpc CreateMovie(MovieRequest) returns (CreateMovieResponse) {
+        option (google.api.http) = {
+            post: "/v1/movie"
+        };
+    }
+
+    rpc GetMovie(MovieRequest) returns (MovieResponse) {
+        option (google.api.http) = {
+            get: "/v1/movie"
+        };
+    }
+
+    rpc UpdateMovie(MovieRequest) returns (MovieResponse) {
+        option (google.api.http) = {
+            put: "/v1/movie"
+        };
+    }
+
+    rpc DeleteMovie(MovieRequest) returns (MovieResponse) {
+        option (google.api.http) = {
+            delete: "/v1/movie"
+        };
+    }
+
+}
+
+message MovieRequest {
+    string id = 1;
+}
+
+message MovieResponse {
+
+}
+
+message GetAllMoviesResponse {
+
+}
+
+message CreateMovie {
+
+}
+
+message CreateMovieResponse {
+
+}
+

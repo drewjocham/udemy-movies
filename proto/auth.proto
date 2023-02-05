@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+option go_package = "api/proto/api";
+
+import "google/api/annotations.proto";
+
+service AuthService {
+
+    rpc Authentication(AuthenticationRequest) returns (AuthenticationResponse) {
+        option (google.api.http) = {
+            get: "/v1/tokens/authentication"
+        };
+    }
+
+    rpc Activation(ActivationRequest) returns (ActivationResponse) {
+        option (google.api.http) = {
+            get: "/v1/tokens/activation"
+        };
+    }
+
+    rpc PasswordReset(PasswordResetRequest) returns (PasswordResetResponse) {
+        option (google.api.http) = {
+            get: "/v1/tokens/password-reset"
+        };
+    }
+
+}
+
+message AuthenticationRequest {
+
+}
+
+message AuthenticationResponse {
+
+}
+
+message ActivationRequest {
+
+}
+
+message ActivationResponse {
+
+}
+
+message PasswordResetRequest {
+
+}
+
+message PasswordResetResponse {
+
+}

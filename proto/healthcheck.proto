@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+option go_package = "api/proto/api";
+
+import "google/api/annotations.proto";
+
+service HealthCheckService {
+    rpc Status(HealthCheckRequest) returns (HealthCheckResponse) {}
+}
+
+message HealthCheckRequest {}
+
+message HealthCheckResponse {
+    string status = 1;
+}
