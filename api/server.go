@@ -4,10 +4,13 @@ import (
 	"context"
 	"fmt"
 	"github.com/movies/internal/config"
+	"github.com/movies/internal/repository"
 	"github.com/movies/internal/rest"
 	"github.com/movies/internal/service"
 	"github.com/movies/internal/utils/logger"
 	"github.com/movies/proto/api"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -51,17 +54,34 @@ func startServer() error {
 
 	server := grpc.NewServer(grpc.ChainUnaryInterceptor())
 
+	// mongo database connection
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(cfg.DB.Host))
+	if err != nil {
+		clog.Error(err)
+	}
+
+	defer func() {
+		if err = client.Disconnect(ctx); err != nil {
+			clog.Error(err)
+		}
+	}()
+
+	//Blog Repository
+	blogRepo := repository.NewBlogRepository(client, cfg)
+
+	userRepo := repository.NewUserRepository(client, cfg)
+
 	//UserService
-	userService := service.NewUserServiceServer()
+	userService := service.NewUserServiceServer(userRepo)
 	api.RegisterUserServiceServer(server, userService)
 
 	//Auth Service
 	authService := service.NewAuthServiceServer()
 	api.RegisterAuthServiceServer(server, authService)
 
-	//Movie Service
-	movieService := service.NewMovieServiceServer()
-	api.RegisterMovieServiceServer(server, movieService)
+	//Blog Service
+	blogService := service.NewBlogServiceServer(blogRepo)
+	api.RegisterBlogServiceServer(server, blogService)
 
 	// gRPC server
 	g.Go(func() error {
@@ -92,10 +112,8 @@ func startServer() error {
 }
 
 func main() {
-
 	err := startServer()
 	if err != nil {
 		return
 	}
-
 }

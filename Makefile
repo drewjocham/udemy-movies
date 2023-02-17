@@ -41,15 +41,10 @@ mod-vendor: ## Download, verify and vendor dependencies
 linter: ## Run linter
 	cd api && golangci-lint run
 
-# go install \
-    github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@latest \
-    github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@latest
-
-# git submodule add https://github.com/googleapis/googleapis
 .PHONY: proto
 proto: ## Generate protobuf code
 # Compile proto files inside the project.
-	protoc auth.proto movie.proto users.proto healthcheck.proto --proto_path=${PROJ_PATH}/proto --go_out=. --go-grpc_out=. \
+	protoc auth.proto blog.proto users.proto healthcheck.proto --proto_path=${PROJ_PATH}/proto --go_out=. --go-grpc_out=. \
 		   --grpc-gateway_out . \
 		   --grpc-gateway_opt generate_unbound_methods=true \
 		   --plugin=protoc-gen-grpc-gateway=${GOPATH}/bin/protoc-gen-grpc-gateway \

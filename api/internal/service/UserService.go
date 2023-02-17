@@ -7,11 +7,17 @@ import (
 )
 
 type userServiceServer struct {
+	repo UserRepository
 	api.UnimplementedUserServiceServer
 }
 
-func NewUserServiceServer() api.UserServiceServer {
-	return &userServiceServer{}
+type UserRepository interface {
+}
+
+func NewUserServiceServer(repo UserRepository) api.UserServiceServer {
+	return &userServiceServer{
+		repo: repo,
+	}
 }
 
 func (u *userServiceServer) GetUsers(context context.Context, req *api.GetUsersRequest) (*api.GetUsersResponse, error) {

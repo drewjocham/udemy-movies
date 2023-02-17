@@ -1,25 +1,32 @@
 package repository
 
 import (
+	"context"
 	"errors"
+	"fmt"
+	"github.com/movies/internal/config"
+	"github.com/movies/internal/utils/logger"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"time"
-
 	"golang.org/x/crypto/bcrypt"
+	"gopkg.in/validator.v2"
+	"time"
 )
 
 var (
 	ErrDuplicateEmail = errors.New("duplicate email")
+	ErrInvalidUser    = errors.New("invalid user model")
 )
 
 var AnonymousUser = &User{}
 
 type User struct {
-	ID        int64     `json:"id"`
-	CreatedAt time.Time `json:"created_at"`
-	Name      string    `json:"name"`
-	Email     string    `json:"email"`
-	Password  password  `json:"-"`
+	ID        int64     `json:"id" validate:"required,id"`
+	CreatedAt time.Time `json:"created_at" validate:"required,created_at"`
+	Name      string    `json:"name" validate:"required,name"`
+	Email     string    `json:"email" validate:"required,email"`
+	Password  password  `json:"-" validate:"required,password"`
 	Activated bool      `json:"activated"`
 	Version   int       `json:"-"`
 }
@@ -60,23 +67,98 @@ type Repository struct {
 	collection *mongo.Collection
 }
 
-func NewUserRepository(client *mongo.Client) *Repository {
+func NewUserRepository(client *mongo.Client, cfg *config.Config) *Repository {
 	return &Repository{
 		client:     client,
-		collection: client.Database("movies").Collection("users"),
+		collection: client.Database(cfg.UserConfig.Database).Collection(cfg.UserConfig.Collection),
 	}
 }
 
-func (r Repository) Insert(user *User) error {
-	return nil
+func (r Repository) Insert(ctx context.Context, user *User) (string, error) {
+	clog := logger.GetLoggerFromContext(ctx)
+
+	clog.Info("Inserting new user")
+
+	if errs := validator.Validate(user); errs != nil {
+		clog.Error(ErrInvalidUser)
+	}
+
+	doc := bson.D{
+		{"id", user.ID},
+		{"createdAt", user.CreatedAt},
+		{"name", user.Name},
+		{"email", user.Email},
+		{"password", user.Password},
+		{"activated", false},
+		{"version", user.Version},
+	}
+
+	res, err := r.collection.InsertOne(ctx, doc)
+	if err != nil {
+		return "", err
+	}
+
+	fmt.Printf("Inserted user document with _id: %v\n", res.InsertedID)
+	result := res.InsertedID.(primitive.ObjectID).String()
+
+	return result, nil
 }
 
-func (r Repository) GetByEmail(email string) (*User, error) {
-	return nil, nil
+func (r Repository) GetByEmail(ctx context.Context, email string) (*User, error) {
+	clog := logger.GetLoggerFromContext(ctx)
+
+	clog.Info("Getting email")
+
+	filter := bson.D{{"email", email}}
+
+	result := &User{}
+
+	err := r.collection.FindOne(ctx, filter).Decode(result)
+	if err != nil {
+		return result, err
+	}
+
+	clog.Info("email found")
+
+	return result, nil
 }
 
-func (r Repository) Update(user *User) error {
-	return nil
+func (r Repository) Update(ctx context.Context, user *User) (int64, error) {
+	clog := logger.GetLoggerFromContext(ctx)
+
+	clog.Info("Updating user")
+
+	if errs := validator.Validate(user); errs != nil {
+		clog.Error(ErrInvalidUser)
+	}
+
+	find := bson.D{
+		{"id", user.ID},
+	}
+
+	update := bson.D{
+		{"$set", bson.D{
+			{"createdAt", user.CreatedAt},
+			{"name", user.Name},
+			{"email", user.Email},
+			{"password", user.Password},
+			{"activated", false},
+			{"version", user.Version},
+			{"updated", time.Now()},
+		},
+		},
+	}
+
+	count, err := r.collection.UpdateMany(ctx, find, update)
+	if err != nil {
+		clog.Error(err)
+		return 0, err
+	}
+
+	clog.Info("Updating Todo completed")
+
+	return count.ModifiedCount, err
+
 }
 
 func (r Repository) GetForToken(tokenScope, tokenPlaintext string) (*User, error) {

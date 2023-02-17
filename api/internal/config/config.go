@@ -11,13 +11,26 @@ type ServerConfig struct {
 }
 
 type Database struct {
-	Host     int    `envconfig:"DB_HOST" default:""`
-	URL      int    `envconfig:"DB_URL" default:""`
-	Password string `envconfig:"DB_PASSWORD" default:""`
+	Host     string `envconfig:"DB_HOST" default:"mongodb+srv://drew:OCaOh7Fb6eY5bqPem4ZOwA@cluster0.mqj7m.mongodb.net/?retryWrites=true&w=majority"`
+	URL      string `envconfig:"DB_URL" default:""`
+	Password string `envconfig:"DB_PASSWORD" default:"OCaOh7Fb6eY5bqPem4ZOwA"`
+}
+
+type BlogRepoConfig struct {
+	Database   string `envconfig:"DB_BLOG_DB_NAME" default:"blog"`
+	Collection string `envconfig:"DB_BLOG_COLLECTION_NAME" default:"blog"`
+}
+
+type UserRepoConfig struct {
+	Database   string `envconfig:"DB_USER_DB_NAME" default:"blog"`
+	Collection string `envconfig:"DB_USER_COLLECTION_NAME" default:"users"`
 }
 
 type Config struct {
-	Server ServerConfig
+	Server     ServerConfig
+	BlogConfig BlogRepoConfig
+	UserConfig UserRepoConfig
+	DB         Database
 }
 
 func NewConfig() (*Config, error) {
