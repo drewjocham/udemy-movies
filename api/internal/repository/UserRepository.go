@@ -74,7 +74,7 @@ func NewUserRepository(client *mongo.Client, cfg *config.Config) *Repository {
 	}
 }
 
-func (r Repository) Insert(ctx context.Context, user *User) (string, error) {
+func (r *Repository) Insert(ctx context.Context, user *User) (string, error) {
 	clog := logger.GetLoggerFromContext(ctx)
 
 	clog.Info("Inserting new user")
@@ -104,7 +104,7 @@ func (r Repository) Insert(ctx context.Context, user *User) (string, error) {
 	return result, nil
 }
 
-func (r Repository) GetByEmail(ctx context.Context, email string) (*User, error) {
+func (r *Repository) GetByEmail(ctx context.Context, email string) (*User, error) {
 	clog := logger.GetLoggerFromContext(ctx)
 
 	clog.Info("Getting email")
@@ -123,7 +123,7 @@ func (r Repository) GetByEmail(ctx context.Context, email string) (*User, error)
 	return result, nil
 }
 
-func (r Repository) Update(ctx context.Context, user *User) (int64, error) {
+func (r *Repository) Update(ctx context.Context, user *User) (int64, error) {
 	clog := logger.GetLoggerFromContext(ctx)
 
 	clog.Info("Updating user")
@@ -161,7 +161,7 @@ func (r Repository) Update(ctx context.Context, user *User) (int64, error) {
 
 }
 
-func (r Repository) GetForToken(tokenScope, tokenPlaintext string) (*User, error) {
+func (r *Repository) GetForToken(tokenScope, tokenPlaintext string) (*User, error) {
 
 	return nil, nil
 }

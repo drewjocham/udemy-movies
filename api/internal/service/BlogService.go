@@ -2,10 +2,12 @@ package service
 
 import (
 	"context"
-	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/movies/internal/repository"
 	"github.com/movies/internal/utils/logger"
 	"github.com/movies/proto/api"
+	"google.golang.org/protobuf/types/known/timestamppb"
+	"strconv"
+	"time"
 )
 
 type BlogServiceServer struct {
@@ -35,40 +37,55 @@ func (s *BlogServiceServer) GetAllBlogs(ctx context.Context, req *api.BlogReques
 
 	allBlogs, err := s.repo.GetAll(ctx)
 	if err != nil {
-		// handle error here
+		clog.Error(err)
 	}
-
-	var blogs []*api.Blog
+	var index = 0
+	blogs := make(map[string]*api.Blog)
 
 	for _, blog := range allBlogs {
-		temp := api.Blog{
+
+		createdAt, err := time.Parse("2006-01-02 15:04:05 -0700 MST", blog.CreatedAt.String())
+		if err != nil {
+			return nil, err
+		}
+
+		updatedAt, err := time.Parse("2006-01-02 15:04:05 -0700 MST", blog.UpdatedAt.String())
+		if err != nil {
+			return nil, err
+		}
+
+		tempBlog := &api.Blog{
 			Id:        blog.ID,
-			CreatedAt: &blog.CreatedAt,
+			CreatedAt: timestamppb.New(createdAt),
+			UpdatedAt: timestamppb.New(updatedAt),
 			ImagePath: blog.ImagePath,
 			Title:     blog.Title,
+			Type:      blog.Type,
 			Body:      blog.Body,
+			Version:   blog.Version,
 		}
-		blogs = append(blogs, &temp)
+		index = index + 1
+		blogs[strconv.FormatInt(int64(index), 10)] = tempBlog
 	}
 
 	return &api.GetAllBlogsResponse{
-		Blog: blogs,
+		Blogs: blogs,
 	}, nil
 }
 
-func (s *BlogServiceServer) CreateBlog(ctx context.Context, blog *api.CreateBlogRequest) (*api.CreateBlogResponse, error) {
+func (s *BlogServiceServer) CreateBlog(ctx context.Context, b *api.CreateBlogRequest) (*api.CreateBlogResponse, error) {
 	clog := logger.GetLoggerFromContext(ctx)
 
 	clog.Info("Received request...")
 
 	temp := repository.Blog{
-		ID:        blog.Blog.Id,
-		CreatedAt: timestamp.Timestamp{},
-		UpdatedAt: timestamp.Timestamp{},
-		ImagePath: blog.Blog.ImagePath,
-		Title:     blog.Blog.Title,
-		Body:      blog.Blog.Body,
-		Version:   0,
+		ID:        b.Blog.Id,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		ImagePath: b.Blog.ImagePath,
+		Title:     b.Blog.Title,
+		Body:      b.Blog.Body,
+		Version:   b.Blog.Version,
 	}
 
 	err := s.repo.Insert(ctx, &temp)

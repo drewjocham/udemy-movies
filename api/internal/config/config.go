@@ -17,13 +17,13 @@ type Database struct {
 }
 
 type BlogRepoConfig struct {
-	Database   string `envconfig:"DB_BLOG_DB_NAME" default:"blog"`
-	Collection string `envconfig:"DB_BLOG_COLLECTION_NAME" default:"blog"`
+	Database   string `envconfig:"DB_BLOG_DB_NAME" default:"data"`
+	Collection string `envconfig:"DB_BLOG_COLLECTION_NAME" default:"demo"`
 }
 
 type UserRepoConfig struct {
-	Database   string `envconfig:"DB_USER_DB_NAME" default:"blog"`
-	Collection string `envconfig:"DB_USER_COLLECTION_NAME" default:"users"`
+	Database   string `envconfig:"DB_USER_DB_NAME" default:"data"`
+	Collection string `envconfig:"DB_USER_COLLECTION_NAME" default:"demo"`
 }
 
 type Config struct {

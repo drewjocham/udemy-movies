@@ -65,6 +65,10 @@ func RunHttpServer(server *http.Server, httpEndpoint, grpcEndpoint, swaggerPath 
 		return
 	}
 
+	if err = api.RegisterBlogServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts); err != nil {
+		return
+	}
+
 	swMux := http.NewServeMux()
 	swMux.Handle("/", mux)
 

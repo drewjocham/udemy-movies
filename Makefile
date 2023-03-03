@@ -2,7 +2,7 @@ PROJ_PATH=${CURDIR}
 PROTO_DEST=./src/proto
 
 .PHONY: install-view
-build-view: ## install node_modules
+install-view: ## install node_modules
 	cd view && yarn
 
 .PHONY: build-view

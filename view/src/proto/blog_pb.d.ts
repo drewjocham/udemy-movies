@@ -5,6 +5,7 @@
 /* eslint-disable */
 
 import * as jspb from "google-protobuf";
+import * as protoc_gen_openapiv2_options_annotations_pb from "./protoc-gen-openapiv2/options/annotations_pb";
 import * as google_protobuf_timestamp_pb from "google-protobuf/google/protobuf/timestamp_pb";
 
 export class BlogRequest extends jspb.Message { 
@@ -24,6 +25,41 @@ export class BlogRequest extends jspb.Message {
 export namespace BlogRequest {
     export type AsObject = {
         id: string,
+    }
+}
+
+export class BlogAllRequest extends jspb.Message { 
+
+    hasPage(): boolean;
+    clearPage(): void;
+    getPage(): number | undefined;
+    setPage(value: number): BlogAllRequest;
+
+    hasPerPage(): boolean;
+    clearPerPage(): void;
+    getPerPage(): number | undefined;
+    setPerPage(value: number): BlogAllRequest;
+
+    hasOrder(): boolean;
+    clearOrder(): void;
+    getOrder(): SortOrder | undefined;
+    setOrder(value: SortOrder): BlogAllRequest;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): BlogAllRequest.AsObject;
+    static toObject(includeInstance: boolean, msg: BlogAllRequest): BlogAllRequest.AsObject;
+    static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+    static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+    static serializeBinaryToWriter(message: BlogAllRequest, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): BlogAllRequest;
+    static deserializeBinaryFromReader(message: BlogAllRequest, reader: jspb.BinaryReader): BlogAllRequest;
+}
+
+export namespace BlogAllRequest {
+    export type AsObject = {
+        page?: number,
+        perPage?: number,
+        order?: SortOrder,
     }
 }
 
@@ -51,10 +87,9 @@ export namespace BlogResponse {
 }
 
 export class GetAllBlogsResponse extends jspb.Message { 
-    clearBlogList(): void;
-    getBlogList(): Array<Blog>;
-    setBlogList(value: Array<Blog>): GetAllBlogsResponse;
-    addBlog(value?: Blog, index?: number): Blog;
+
+    getBlogsMap(): jspb.Map<string, Blog>;
+    clearBlogsMap(): void;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): GetAllBlogsResponse.AsObject;
@@ -68,7 +103,8 @@ export class GetAllBlogsResponse extends jspb.Message {
 
 export namespace GetAllBlogsResponse {
     export type AsObject = {
-        blogList: Array<Blog.AsObject>,
+
+        blogsMap: Array<[string, Blog.AsObject]>,
     }
 }
 
@@ -97,11 +133,6 @@ export namespace CreateBlogRequest {
 
 export class CreateBlogResponse extends jspb.Message { 
 
-    hasBlog(): boolean;
-    clearBlog(): void;
-    getBlog(): Blog | undefined;
-    setBlog(value?: Blog): CreateBlogResponse;
-
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): CreateBlogResponse.AsObject;
     static toObject(includeInstance: boolean, msg: CreateBlogResponse): CreateBlogResponse.AsObject;
@@ -114,7 +145,6 @@ export class CreateBlogResponse extends jspb.Message {
 
 export namespace CreateBlogResponse {
     export type AsObject = {
-        blog?: Blog.AsObject,
     }
 }
 
@@ -133,6 +163,10 @@ export class Blog extends jspb.Message {
     setUpdatedat(value?: google_protobuf_timestamp_pb.Timestamp): Blog;
     getImagepath(): string;
     setImagepath(value: string): Blog;
+    getType(): string;
+    setType(value: string): Blog;
+    getCategory(): string;
+    setCategory(value: string): Blog;
     getTitle(): string;
     setTitle(value: string): Blog;
     getBody(): string;
@@ -156,8 +190,16 @@ export namespace Blog {
         createdat?: google_protobuf_timestamp_pb.Timestamp.AsObject,
         updatedat?: google_protobuf_timestamp_pb.Timestamp.AsObject,
         imagepath: string,
+        type: string,
+        category: string,
         title: string,
         body: string,
         version: string,
     }
+}
+
+export enum SortOrder {
+    SORT_ORDER_UNKNOWN = 0,
+    SORT_ORDER_ASC = 1,
+    SORT_ORDER_DESC = 2,
 }

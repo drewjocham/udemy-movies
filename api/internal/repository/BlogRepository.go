@@ -3,21 +3,23 @@ package repository
 import (
 	"context"
 	"fmt"
-	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/movies/internal/config"
 	"github.com/movies/internal/utils/logger"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"time"
 )
 
 type Blog struct {
-	ID        string              `json:"id"`
-	CreatedAt timestamp.Timestamp `json:"-"`
-	UpdatedAt timestamp.Timestamp `json:"-"`
-	ImagePath string              `json:"imagePath"`
-	Title     string              `json:"title"`
-	Body      string              `json:"string,omitempty"`
-	Version   int32               `json:"version"`
+	ID        string    `bson:"id" validate:"required,id"`
+	CreatedAt time.Time `bson:"createdAt" validate:"required,createdAt"`
+	UpdatedAt time.Time `bson:"updatedAt"`
+	ImagePath string    `bson:"imagePath" validate:"imagePath"`
+	Category  string    `bson:"category" validate:"required,category"`
+	Type      string    `bson:"type" validate:"required,type"`
+	Title     string    `bson:"title" validate:"required,title"`
+	Body      string    `bson:"string,omitempty"`
+	Version   string    `bson:"version"`
 }
 
 type BlogRepository struct {
@@ -38,6 +40,9 @@ func (m *BlogRepository) Insert(ctx context.Context, blog *Blog) error {
 
 	clog.Info("Inserting new blog")
 
+	//TODO: add validation
+
+	//TODO: add new fields
 	doc := bson.D{
 		{"id", blog.ID},
 		{"createdAt", blog.CreatedAt},
@@ -125,6 +130,7 @@ func (m *BlogRepository) Delete(ctx context.Context, id int64) (int64, error) {
 	return num.DeletedCount, err
 }
 
+// add pagenation here
 func (m *BlogRepository) GetAll(ctx context.Context) ([]*Blog, error) {
 	clog := logger.GetLoggerFromContext(ctx)
 

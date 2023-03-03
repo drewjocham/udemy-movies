@@ -117,6 +117,18 @@
             "type": "string"
           },
           {
+            "name": "blog.type",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "blog.category",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
             "name": "blog.title",
             "in": "query",
             "required": false,
@@ -217,6 +229,12 @@
         "imagePath": {
           "type": "string"
         },
+        "type": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
         "title": {
           "type": "string"
         },
@@ -237,19 +255,14 @@
       }
     },
     "CreateBlogResponse": {
-      "type": "object",
-      "properties": {
-        "blog": {
-          "$ref": "#/definitions/Blog"
-        }
-      }
+      "type": "object"
     },
     "GetAllBlogsResponse": {
       "type": "object",
       "properties": {
-        "blog": {
-          "type": "array",
-          "items": {
+        "blogs": {
+          "type": "object",
+          "additionalProperties": {
             "$ref": "#/definitions/Blog"
           }
         }
